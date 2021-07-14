@@ -1,13 +1,14 @@
-//  Stan code to run distributed lag model under a transfer function for Koyck specification, integrated into the framework of dynamic learn model 
-// The model contain seasonal terms specified by a harmonic wave, covarite, and dynamic intercept with random walk
-//Hiroshi Mamiya, McGill University, April 1, 2021
+// Stan code to run distributed lag model with Koyck transfer function parametrization, integrated into a dynamic linear model 
+// The model contain seasonal terms specified by a harmonic wave, a covarite, and a dynamic local level intercept with random walk
+// The univariate outcome (y) represents weekly sales of a single beverage category in a single store, thus models are run for each food category (i.e., not multivariate model)
+// Hiroshi Mamiya, McGill University, April 1, 2021
 
 
 data {
     int<lower=0> T;  // Number of observations (weeks)
     real y[T];    // Outcome, log sales of sugar sweetened beverages     
     real week[T]; // Week index 
-    real cov1[T]; //covariate e.g. display promotion 
+    real cov1[T]; //covariate e.g., display promotion, mean centered unless binary (i.e, holiday indicator) 
     real discount[T];   // Mean centered discounting 
     real lLambda; // Lower constraint for lag parameter in transfer function 
     real uLambda; // Upper constraint for lag parameter in transfer function 
@@ -77,7 +78,7 @@ model {
   }
 }
 
-// Calculation of log likelihood, predictive distrition, and 
+// Calculation of log likelihood for WAIC, predictive distrition, and 
 // counterfactual sales quantity comparing fitted mean sales between model with and without lag effects 
 // Note that monitoring and saving these variables can make the fit object very large, so unnecessary variables 
 // can be ommited. 
