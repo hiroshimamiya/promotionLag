@@ -70,16 +70,22 @@ for (t in 2:Tn){
 T <- Tn
 # fit the model 
 fit <- stan(file="stan/model/simulation/model_alphaLevel_koyck.stan", data=c("T","y","x"), 
-            iter=20000,  chains=3, control = list(max_treedepth = 15))
+            iter=30000,  chains=3, control = list(max_treedepth = 15))
 
  
 
 
-### Inspect results: posteior summary and distributions 
+### Inspect the sign of convergence 
 traceplot(fit, pars = c("sigma_V", "sigma_alpha", "psi", "lambda", "alpha[1]", "alpha[200]", "alpha[300]"))
 ggsave("trace.png", width = 7, height = 4)
-print(fit, pars = c("sigma_V", "psi", "lambda", "sigma_alpha", "alpha[1]", "alpha[10]"))
+# MCMC pairs 
 pairs(fit, pars = c("sigma_V", "psi", "lambda", "sigma_alpha", "alpha[1]", "alpha[10]"))
+
+
+
+### Results generated below are relevant only if sign of mixing MCMC and convergence is reasonably assumed from traceplot and other means of convergent diagnostics
+# Table of posterior summary 
+print(fit, pars = c("sigma_V", "psi", "lambda", "sigma_alpha", "alpha[1]", "alpha[10]"))
 
 
 ### Plot posterior distribtion and compare with true value 
