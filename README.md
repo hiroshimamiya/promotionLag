@@ -12,7 +12,7 @@ require(ggplot2)
 options(mc.cores=parallel::detectCores())
 
 rm(list=ls())
-set.seed(123)
+set.seed(1)
 ```
 
 ------------------------------------------------------------------------
@@ -116,44 +116,6 @@ x <- x[-H] # Trim lag horizon
 #### Compile results for fit 2
 
 ``` r
-# Interpretation below is relevant only if signs of convergence in MCMC are observed
-# Only focusing on the parameters from the fit 3 above
-
-
-# Histogram ofposterior distribtion compared with true value 
-plotHist <- function(fit, param, trueValue, range = NA, label = ""){
-  # Extract posteiror simulation 
-  post <- rstan::extract(fit, pars =  c(eval(param)), permuted = TRUE, inc_warmup = FALSE)
-  sim <- post[[1]]
-  
-  # Plot 
-  p <- ggplot() + aes(sim)+ 
-    geom_histogram(fill="grey", color="white") + 
-    theme_classic() +  
-    geom_vline(xintercept = trueValue, lty = 5) + 
-    xlab(label) + ylab("") +
-    theme(axis.text = element_text(size = 12))
-  
-  # Range of X axist if needed
-  if(!is.na(range)){
-    p <- p + scale_x_continuous(limits=c(range[1],range[2]))  
-  }
-  return(p)
-}
-
-plotList <- list()
-plotList[[1]] <- plotHist(fit3,  param = "sigma_alpha", trueValue = sigma_alphaLevel, label = expression(sigma[alpha]))
-plotList[[2]] <- plotHist(fit3,  param = "sigma_V", trueValue = sigma_Y, label = expression(sigma[Y]))
-
-cowplot::plot_grid(plotlist = plotList, ncol = 2, labels = "auto", label_fontface = "plain")
-```
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
-
-``` r
 ### Generate Impuse response function from fit 
 post <- rstan::extract(fit3, pars =  c("beta", "lambda"), permuted = TRUE, inc_warmup = FALSE)
 betaPosterior = post[[1]]; lambdaPosterior = post[[2]]
@@ -182,7 +144,7 @@ p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=median)) +
 p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-2.png)
+![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ``` r
 # Posteior fit check, comparison of fitted and unobserved (true) value 
@@ -197,19 +159,4 @@ p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")
  title(main = "Predictive distribution of and observed Y \n Fitted mean:solid line, 95% credible interval: dotted line, overved Y: cross ")
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-3.png)
-
-``` r
-# Compare posteior of alpha and true values  
-params <- rstan::extract(fit3, pars = "alpha")
-mean <- apply(params$alpha, 2, mean)
-lo <- apply(params$alpha, 2, quantile, 0.025)
-hi <- apply(params$alpha, 2, quantile, 0.975)
-plot(lo, type = "l", lty = "dotted", ylim = range(c(mean, lo, hi)), ylab = expression(alpha[t]), xlab = "Time")
-points(alpha, pch = 3, cex = 0.5, col = "blue")
-lines(hi, lty = "dotted")
-lines(mean, type = "l", lwd = 1)
-title(main = "Estimated (solid line) and true (dot) value of stochastic intercept \n and 95% credible interval (dotted line)")
-```
-
-![](README_files/figure-markdown_github/unnamed-chunk-4-4.png)
+![](README_files/figure-markdown_github/unnamed-chunk-4-2.png)
