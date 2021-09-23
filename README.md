@@ -113,7 +113,7 @@ x <- x[-H] # Trim lag horizon
 
 #### Fitting stan models
 
-#### Compile results for fit 2
+#### Compile results
 
 ``` r
 ### Generate Impuse response function from fit 
