@@ -113,7 +113,46 @@ x <- x[-H] # Trim lag horizon
 
 #### Fitting stan models
 
-#### Compile results
+``` r
+### Compile and execute a Stan model 
+
+## Fixed intercept, no level 
+#fit1 <- stan(file="testModel_koyck.stan", data=c("T","y","x"), 
+#            iter=10000,  chains=3, control = list(max_treedepth = 15, adapt_delta = 0.95))
+
+## Quick check of mcmc
+#traceplot(fit1, pars = c("sigma_V", "beta", "lambda", "alpha"))
+#pairs(fit1, pars = c("sigma_V", "beta", "lambda", "alpha"))
+#sum(summary(fit1)$summary[,"Rhat"] > 1.01)
+
+
+## Fitting dynamic linar model, state vector (alpha) written in the transformed parameter block
+#fit2 <- stan(file="testModel_alphaLevel_koyck_reparam.stan", data=c("T","y","x"), 
+#            iter=10000,  chains=3, control = list(max_treedepth = 15, adapt_delta = 0.95))
+
+## Quick check of mcmc
+#traceplot(fit2, pars = c("sigma_V", "sigma_alpha[1]", "sigma_alpha[2]", "scale_alpha", "beta", "lambda", "alpha[1]", "alpha[200]", "alpha[300]"))
+#pairs(fit2, pars = c("sigma_V", "sigma_alpha[1]", "sigma_alpha[2]", "scale_alpha", "beta", "lambda", "alpha[1]", "alpha[200]", "alpha[300]"))
+#sum(summary(fit2)$summary[,"Rhat"] > 1.01)
+
+
+# Fitting dynamic linar model, state vector (alpha) written in the model block   
+fit3 <- stan(file="testModel_alphaLevel_koyck.stan", data=c("T","y","x"), 
+            iter=10000,  chains=3, control = list(max_treedepth = 15))
+
+# Quick check of mcmc
+traceplot(fit3, pars = c("sigma_V", "sigma_alpha", "beta", "lambda", "alpha[1]", "alpha[200]", "alpha[300]"))
+```
+
+``` r
+pairs(fit3, pars = c("sigma_V", "sigma_alpha",  "sigma_alpha", "beta", "lambda", "alpha[1]", "alpha[200]", "alpha[300]"))
+```
+
+``` r
+sum(summary(fit3)$summary[,"Rhat"] > 1.01)
+```
+
+#### Compile result (Impulse Response Function) - relevant only if there is a sign of convergence in MCMC
 
 ``` r
 ### Generate Impuse response function from fit 
@@ -138,7 +177,7 @@ p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=median)) +
   geom_ribbon(aes(ymin=lo, ymax=hi), linetype=2, alpha=0.1)  + 
   scale_y_continuous(labels=scaleFUN) + 
   theme(axis.text = element_text(color = "black")) + 
-  ggtitle("Impulse reponse function (Black) and pointwise 95% credible range.")
+  ggtitle("Impulse reponse function (Black) and pointwise 95% credible range.\n Red dotted line is true lag function")
 
 # Add the true lag function 
 p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")

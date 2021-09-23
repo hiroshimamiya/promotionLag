@@ -107,7 +107,7 @@ x <- x[-H] # Trim lag horizon
 
 #### Fitting stan models
 
-```{r, include = FALSE}
+```{r, warning=FALSE, message=FALSE, fig.show='hide', results=FALSE}
 ### Compile and execute a Stan model 
 
 ## Fixed intercept, no level 
@@ -142,7 +142,9 @@ sum(summary(fit3)$summary[,"Rhat"] > 1.01)
 
 ```
 
-#### Compile results  
+
+
+#### Compile result (Impulse Response Function) - relevant only if there is a sign of convergence in MCMC
 
 ```{r,cache = TRUE}
 
@@ -168,7 +170,7 @@ p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=median)) +
   geom_ribbon(aes(ymin=lo, ymax=hi), linetype=2, alpha=0.1)  + 
   scale_y_continuous(labels=scaleFUN) + 
   theme(axis.text = element_text(color = "black")) + 
-  ggtitle("Impulse reponse function (Black) and pointwise 95% credible range.")
+  ggtitle("Impulse reponse function (Black) and pointwise 95% credible range.\n Red dotted line is true lag function")
 
 # Add the true lag function 
 p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")
