@@ -17,7 +17,7 @@ set.seed(1)
 
 ------------------------------------------------------------------------
 
-#### Generate a single realization of time-series, stochastic level and koyck lag
+### Generate a single realization of time-series, stochastic level and koyck lag
 
 ``` r
 # Numer of observations (time points)
@@ -80,7 +80,7 @@ yMean    <- as.numeric(lag_mat %*% lagFunction) + alpha
 y <- yMean + rnorm(Tn, mean = 0, sd = sigma_Y)
 
 
-plot(yMean, ylab = c("Y"), xlab = "Time"); 
+plot(yMean, ylab = c("Y"), xlab = "Time", ylim=c( min(y) -0.2, max(y) + 0.2)); 
 lines(y, type = "l"); 
 title(main = "Mean of Y(circle) plus noise (line)")
 ```
@@ -111,7 +111,7 @@ x <- x[-H] # Trim lag horizon
 #}
 ```
 
-#### Fitting stan models
+### Fitting stan models
 
 ``` r
 ### Compile and execute a Stan model 
@@ -152,7 +152,7 @@ pairs(fit3, pars = c("sigma_V", "sigma_alpha",  "sigma_alpha", "beta", "lambda",
 sum(summary(fit3)$summary[,"Rhat"] > 1.01)
 ```
 
-#### Compile result (Impulse Response Function) - relevant only if there is a sign of convergence in MCMC
+### Compile result (Impulse Response Function) - relevant only if there is a sign of convergence in MCMC
 
 ``` r
 ### Generate Impuse response function from fit 
@@ -177,7 +177,7 @@ p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=median)) +
   geom_ribbon(aes(ymin=lo, ymax=hi), linetype=2, alpha=0.1)  + 
   scale_y_continuous(labels=scaleFUN) + 
   theme(axis.text = element_text(color = "black")) + 
-  ggtitle("Impulse reponse function (Black) and pointwise 95% credible range.\n Red dotted line is true lag function")
+  ggtitle("Impulse reponse function (Black) \n with pointwise 95% credible range. \n Red dotted line is true lag function")
 
 # Add the true lag function 
 p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")
@@ -195,7 +195,7 @@ p + geom_line(aes(y = lagTrue, colour = "red"), linetype="dashed")
  points(y, pch = 3, cex = 0.5, col = "blue")
  lines(hi, lty = "dotted")
  lines(median, type = "l", lwd = 1)
- title(main = "Predictive distribution of and observed Y \n Fitted mean:solid line, 95% credible interval: dotted line, overved Y: cross ")
+ title(main = "Predictive distribution of and observed Y \n Fitted mean:solid line \n 95% credible interval: dotted line \n  Observed Y: cross ")
 ```
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-2.png)
