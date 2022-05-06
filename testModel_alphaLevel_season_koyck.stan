@@ -24,11 +24,11 @@ parameters {
   real beta; // Immediate effect of explanatory variable
   real <lower = 0, upper = 1> lambda; // Koyck lag coefficient, needs to be -1 < lamgda < 1 
   
-  # Season effects 
+  // Season effects 
   real gammaSin;
   real gammaCos;
   
-  # Covariate coefficient
+  // Covariate coefficient
   real deltaCov; 
 }
 
@@ -51,8 +51,8 @@ transformed parameters {
 
 model { //Priors, outcome model, and evolution of level
   //priors and initial values 
-  sigma_Y  ~ cauchy(0, 1); 
-  alpha[1] ~ normal(10, 5); 
+  sigma_Y  ~ cauchy(0, 5); 
+  alpha[1] ~ normal(0, 5); 
   sigma_alpha ~ normal(0, 1);  
   beta ~ normal(0, 5);
   lambda ~ uniform(0, 1);
@@ -61,9 +61,9 @@ model { //Priors, outcome model, and evolution of level
   deltaCov  ~ normal(0, 5); 
   
   
-  // Evoluatio nof  the level intecept
-  for(t in 2:T)alpha[t] ~ normal(alpha[t-1], sigma_alpha);
-  //alpha[2:T] ~ normal(alpha[1:(T - 1)], sigma_alpha);//this is faster
+  // Evoluation of  the level intecept
+  //for(t in 2:T)alpha[t] ~ normal(alpha[t-1], sigma_alpha);
+  alpha[2:T] ~ normal(alpha[1:(T - 1)], sigma_alpha);//this is faster
   
   // the outcome from intercept, lag structure, season and noise
   for(t in 1:T) y[t] ~ normal(alpha[t] + E[t] + wave[t] + deltaCov*cov1[t], sigma_Y);

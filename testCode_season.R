@@ -164,7 +164,7 @@ for(i in 2:h){irfWeight[i, ] <- c(i, quantile(beta * {lambdaPosterior^(i-1)}, c(
 # Plot IRF
 irfWeight$lagTrue <-  lagFunction[1:h] 
 scaleFUN <- function(x) sprintf("%.1f", x)
-p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=mean)) + 
+p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=mean, linetype = "est")) + 
   geom_line() + 
   theme_classic() +
   xlab("Lag") + ylab("Change of outcome") + 
@@ -174,8 +174,8 @@ p <-  ggplot(data = irfWeight, aes(x=(weekLag), y=mean)) +
   ggtitle("Impulse reponse function (Black) \n with pointwise 95% credible range (grey band). \n compared to true lag function (red dotted line)")
 
 # Add the true lag function 
-p + geom_line(aes(y = `lagTrue`, colour = "red"), linetype="dashed") + 
-  theme(legend.position="none")
+p + geom_line(data = irfWeight, aes(x = weekLag, y = `lagTrue`, linetype="true"), ) + 
+  scale_linetype_manual(name = 'Legend', values=c("est" = "solid", "true" = "dashed"), labels = c('Estimated','True'))
 
 
 
