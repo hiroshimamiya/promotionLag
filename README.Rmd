@@ -88,13 +88,10 @@ T <- Tn # Time variable,
 x <- x[-H] # Trim lag horizon from the exposure 
 
 ### plot 
-dev.off()
-par(mfrow=c(2,2))
 plot(lagFunction, type = "l", main = "Lag function", xlab = "Time lag", ylab = "Association")
 plot(x, main = "Exposure", type = "l", xlab = "time")
 plot(tempEffect, main = "Season wave (52 weeks frequency)",  type = "l", xlab = "time")
 plot(y, main = "Outcome", type = "l", xlab = "time")
-par(mfrow=c(1,1))
 
 
 
@@ -199,7 +196,6 @@ title(main = "Fitted mean of outcome (solid line) \n 95% credible interval (dott
 
 
 ### Posterior fit check, comparison of fitted and unobserved (true) value of intercept 
-dev.off()
 post <- rstan::extract(fit3, pars = "alpha", permuted = TRUE, inc_warmup = FALSE)
 mean <- apply(post$alpha, 2, mean)
 lo <- apply(post$alpha, 2, quantile, 0.025)
